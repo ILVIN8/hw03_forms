@@ -36,7 +36,9 @@ class TestPost:
     def test_post_model(self):
         model_fields = Post._meta.fields
         text_field = search_field(model_fields, "text")
-        assert text_field is not None, "Добавьте название события `text` модели `Post`"
+        assert (
+            text_field is not None
+        ), "Добавьте название события `text` модели `Post`"
         assert (
             type(text_field) == fields.TextField
         ), "Свойство `text` модели `Post` должно быть текстовым `TextField`"
@@ -64,7 +66,9 @@ class TestPost:
         ), "Свойство `author` модели `Post` должно быть ссылкой на модель пользователя `User`"
 
         group_field = search_field(model_fields, "group_id")
-        assert group_field is not None, "Добавьте свойство `group` в модель `Post`"
+        assert (
+            group_field is not None
+        ), "Добавьте свойство `group` в модель `Post`"
         assert (
             type(group_field) == fields.related.ForeignKey
         ), "Свойство `group` модели `Post` должно быть ссылкой на другую модель `ForeignKey`"
@@ -173,7 +177,9 @@ class TestGroup:
         description = "Тестовое описание группы"
 
         assert Group.objects.all().count() == 0
-        group = Group.objects.create(title=title, slug=slug, description=description)
+        group = Group.objects.create(
+            title=title, slug=slug, description=description
+        )
         assert Group.objects.all().count() == 1
         assert Group.objects.get(slug=slug).pk == group.pk
 
@@ -213,7 +219,9 @@ class TestGroupView:
             r"{%\s*endfor\s*%}", html_template
         ), "Отредактируйте HTML-шаблон, не найден тег закрытия цикла"
 
-        assert re.search(r"<\s*h1\s*>\s*" + group.title + r"\s*<\s*\/h1\s*>", html), (
+        assert re.search(
+            r"<\s*h1\s*>\s*" + group.title + r"\s*<\s*\/h1\s*>", html
+        ), (
             "Отредактируйте HTML-шаблон, не найден заголовок группы "
             "`{% block header %}{{ название_группы }}{% endblock %}`"
         )

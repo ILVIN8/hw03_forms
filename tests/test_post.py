@@ -90,7 +90,8 @@ class TestPostEditView:
             "text" in response.context["form"].fields
         ), "Проверьте, что в форме `form` на странице `/posts/<post_id>/edit/` есть поле `text`"
         assert (
-            type(response.context["form"].fields["text"]) == forms.fields.CharField
+            type(response.context["form"].fields["text"])
+            == forms.fields.CharField
         ), "Проверьте, что в форме `form` на странице `/posts/<post_id>/edit/` поле `text` типа `CharField`"
         assert (
             response.context["form"].fields["text"].required
@@ -120,7 +121,9 @@ class TestPostEditView:
             "после создания поста перенаправляете на страницу поста"
         )
         post = Post.objects.filter(
-            author=post_with_group.author, text=text, group=post_with_group.group
+            author=post_with_group.author,
+            text=text,
+            group=post_with_group.group,
         ).first()
         assert (
             post is not None

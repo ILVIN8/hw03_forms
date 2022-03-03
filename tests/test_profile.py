@@ -9,18 +9,24 @@ class TestProfileView:
     @pytest.mark.django_db(transaction=True)
     def test_profile_view_get(self, client, post_with_group):
         try:
-            response = client.get(f"/profile/{post_with_group.author.username}")
+            response = client.get(
+                f"/profile/{post_with_group.author.username}"
+            )
         except Exception as e:
             assert (
                 False
             ), f"""Страница `/profile/<username>/` работает неправильно. Ошибка: `{e}`"""
         if response.status_code in (301, 302):
-            response = client.get(f"/profile/{post_with_group.author.username}/")
+            response = client.get(
+                f"/profile/{post_with_group.author.username}/"
+            )
         assert (
             response.status_code != 404
         ), "Страница `/profile/<username>/` не найдена, проверьте этот адрес в *urls.py*"
 
-        profile_context = get_field_from_context(response.context, get_user_model())
+        profile_context = get_field_from_context(
+            response.context, get_user_model()
+        )
         assert (
             profile_context is not None
         ), "Проверьте, что передали автора в контекст страницы `/profile/<username>/`"

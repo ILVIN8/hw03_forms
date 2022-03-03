@@ -9,7 +9,9 @@ class TestCreateView:
         try:
             response = user_client.get("/create")
         except Exception as e:
-            assert False, f"""Страница `/create` работает неправильно. Ошибка: `{e}`"""
+            assert (
+                False
+            ), f"""Страница `/create` работает неправильно. Ошибка: `{e}`"""
         if response.status_code in (301, 302):
             response = user_client.get("/create/")
 
@@ -41,7 +43,8 @@ class TestCreateView:
             "text" in response.context["form"].fields
         ), "Проверьте, что в форме `form` на странице `/create/` есть поле `text`"
         assert (
-            type(response.context["form"].fields["text"]) == forms.fields.CharField
+            type(response.context["form"].fields["text"])
+            == forms.fields.CharField
         ), "Проверьте, что в форме `form` на странице `/create/` поле `text` типа `CharField`"
         assert (
             response.context["form"].fields["text"].required
@@ -53,10 +56,14 @@ class TestCreateView:
         try:
             response = user_client.get("/create")
         except Exception as e:
-            assert False, f"""Страница `/create` работает неправильно. Ошибка: `{e}`"""
+            assert (
+                False
+            ), f"""Страница `/create` работает неправильно. Ошибка: `{e}`"""
         url = "/create/" if response.status_code in (301, 302) else "/create"
 
-        response = user_client.post(url, data={"text": text, "group": group.id})
+        response = user_client.post(
+            url, data={"text": text, "group": group.id}
+        )
 
         assert response.status_code in (301, 302), (
             "Проверьте, что со страницы `/create/` после создания поста, "
@@ -76,7 +83,9 @@ class TestCreateView:
             "Проверьте, что со страницы `/create/` после создания поста, "
             f"перенаправляете на страницу профиля автора `/profile/{user.username}`"
         )
-        post = Post.objects.filter(author=user, text=text, group__isnull=True).first()
+        post = Post.objects.filter(
+            author=user, text=text, group__isnull=True
+        ).first()
         assert (
             post is not None
         ), "Проверьте, что вы сохранили новый пост при отправке формы на странице `/create/`"

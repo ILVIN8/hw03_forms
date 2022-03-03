@@ -18,7 +18,10 @@ def index(request):
     # Получаем набор записей для страницы с запрошенным номером
     page_obj = paginator.get_page(page_number)
     # Отдаем в словаре контекста
-    context = {"page_obj": page_obj, "title": "Главная страница проекта YaTube"}
+    context = {
+        "page_obj": page_obj,
+        "title": "Главная страница проекта YaTube",
+    }
     return render(request, template, context)
 
 
@@ -84,7 +87,6 @@ def post_create(request):
             new_post = form.save(commit=False)
             new_post.author_id = request.user.id
             new_post.save()
-            # После успешного создания поста перенаправляем пользователя на страницу его профиля.
             return HttpResponseRedirect(f"/profile/{request.user.username}/")
 
     template = "posts/create_post.html"
@@ -103,7 +105,6 @@ def post_edit(request, post_id):
             post = Post.objects.get(pk=post_id)
             form = PostForm(request.POST, instance=post)
             form.save()
-            # После успешного редактирования поста перенаправляем пользователя на страницу этого поста.
             return HttpResponseRedirect(f"/posts/{post_id}/")
 
     template = "posts/create_post.html"

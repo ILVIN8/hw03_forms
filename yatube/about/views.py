@@ -2,6 +2,7 @@
 # Импортировать TemplateView
 from django.views.generic.base import TemplateView
 
+
 # Описать класс AboutAuthorView для страницы about/author
 class AboutAuthorView(TemplateView):
     template_name = "about/author.html"
