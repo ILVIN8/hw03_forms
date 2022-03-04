@@ -69,7 +69,7 @@ def post_detail(request, post_id):
 
 @login_required
 def post_create(request):
-    form = PostForm(request.POST)
+    form = PostForm(request.POST or None)
     if form.is_valid():
         new_post = form.save(commit=False)
         new_post.author_id = request.user.id
@@ -77,7 +77,6 @@ def post_create(request):
         return redirect(f"/profile/{request.user.username}/")
 
     template = "posts/create_post.html"
-    form = PostForm(request.POST)
     context = {
         "form": form,
     }
@@ -87,17 +86,13 @@ def post_create(request):
 
 @login_required
 def post_edit(request, post_id):
-    if request.method == "POST":
-        form = PostForm(request.POST)
-        if form.is_valid():
-            post = Post.objects.get(pk=post_id)
-            form = PostForm(request.POST, instance=post)
-            form.save()
-            return redirect(f"/posts/{post_id}/")
+    post = Post.objects.get(pk=post_id)
+    form = PostForm(request.POST or None, instance=post)
+    if form.is_valid():
+        form.save()
+        return redirect(f"/posts/{post_id}/")
 
     template = "posts/create_post.html"
-    post = Post.objects.get(pk=post_id)
-    form = PostForm(instance=post)
     context = {
         "form": form,
         "is_edit": True,
