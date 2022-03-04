@@ -1,10 +1,9 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
 from .models import Post, Group, User
-
-# Импортируем класс формы, чтобы сослаться на неё во view-классе
 from .forms import PostForm
-from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
 
 NUMBER_OF_POSTS = 10
 
@@ -13,11 +12,8 @@ def index(request):
     template = "posts/index.html"
     post_list = Post.objects.all()
     paginator = Paginator(post_list, NUMBER_OF_POSTS)
-    # Из URL извлекаем номер запрошенной страницы - это значение параметра page
     page_number = request.GET.get("page")
-    # Получаем набор записей для страницы с запрошенным номером
     page_obj = paginator.get_page(page_number)
-    # Отдаем в словаре контекста
     context = {
         "page_obj": page_obj,
         "title": "Главная страница проекта YaTube",
@@ -29,9 +25,7 @@ def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
     post_list = Post.objects.all()
     paginator = Paginator(post_list, NUMBER_OF_POSTS)
-    # Из URL извлекаем номер запрошенной страницы - это значение параметра page
     page_number = request.GET.get("page")
-    # Получаем набор записей для страницы с запрошенным номером
     page_obj = paginator.get_page(page_number)
     context = {
         "group": group,
@@ -42,16 +36,12 @@ def group_posts(request, slug):
 
 def profile(request, username):
     template = "posts/profile.html"
-    # Здесь код запроса к модели и создание словаря контекста
     author = User.objects.get(username=username)
     post_list = Post.objects.filter(author=author)
     paginator = Paginator(post_list, NUMBER_OF_POSTS)
     post_count = post_list.count()
-    # Из URL извлекаем номер запрошенной страницы - это значение параметра page
     page_number = request.GET.get("page")
-    # Получаем набор записей для страницы с запрошенным номером
     page_obj = paginator.get_page(page_number)
-    # Отдаем в словаре контекста
     context = {
         "page_obj": page_obj,
         "title": f"Профайл пользователя {username}",
@@ -63,13 +53,10 @@ def profile(request, username):
 
 def post_detail(request, post_id):
     template = "posts/post_detail.html"
-    # Здесь код запроса к модели и создание словаря контекста
     post = Post.objects.get(id=post_id)
-    # group = Group.objects.filter(id=post_id)
     group = post.group
     title = post.text[0:29]
     post_count = Post.objects.filter(author=post.author).count()
-    # Отдаем в словаре контекста
     context = {
         "post": post,
         "title": f"Пост {title}",
@@ -80,14 +67,14 @@ def post_detail(request, post_id):
     return render(request, template, context)
 
 
+@login_required
 def post_create(request):
-    if request.method == "POST":
-        form = PostForm(request.POST)
-        if form.is_valid():
-            new_post = form.save(commit=False)
-            new_post.author_id = request.user.id
-            new_post.save()
-            return HttpResponseRedirect(f"/profile/{request.user.username}/")
+    form = PostForm(request.POST)
+    if form.is_valid():
+        new_post = form.save(commit=False)
+        new_post.author_id = request.user.id
+        new_post.save()
+        return redirect(f"/profile/{request.user.username}/")
 
     template = "posts/create_post.html"
     form = PostForm(request.POST)
@@ -98,6 +85,7 @@ def post_create(request):
     return render(request, template, context)
 
 
+@login_required
 def post_edit(request, post_id):
     if request.method == "POST":
         form = PostForm(request.POST)
@@ -105,7 +93,7 @@ def post_edit(request, post_id):
             post = Post.objects.get(pk=post_id)
             form = PostForm(request.POST, instance=post)
             form.save()
-            return HttpResponseRedirect(f"/posts/{post_id}/")
+            return redirect(f"/posts/{post_id}/")
 
     template = "posts/create_post.html"
     post = Post.objects.get(pk=post_id)
