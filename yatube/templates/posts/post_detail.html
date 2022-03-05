@@ -21,7 +21,7 @@
               Всего постов автора:  <span >{{ post_count }}</span>
             </li>
             <li class="list-group-item">
-              <a href="/profile/{{ post.author }}/">
+              <a href="{% url 'posts:profile' post.author %}">
                 все посты пользователя
               </a>
             </li>
@@ -33,7 +33,7 @@
           </p>
           <!-- эта кнопка видна только автору -->
           {% if post.author.username == username %}
-          <a class="btn btn-primary" href="/posts/{{ post.id }}/edit/">
+          <a class="btn btn-primary" href="{% url 'posts:post_edit' post.id %}">
             редактировать запись
           </a>
           {% endif %}          
